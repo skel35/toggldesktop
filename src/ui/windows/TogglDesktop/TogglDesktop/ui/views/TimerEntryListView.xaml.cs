@@ -49,7 +49,7 @@ namespace TogglDesktop
             if (this.TryBeginInvoke(this.onTimeEntryList, open, list, showLoadMoreButton))
                 return;
 
-            this.fillTimeEntryList(list);
+            this.fillTimeEntryList(list, showLoadMoreButton);
 
             if (open)
             {
@@ -78,14 +78,15 @@ namespace TogglDesktop
 
         #endregion
 
-        private void fillTimeEntryList(List<Toggl.TogglTimeEntryView> list)
+        private void fillTimeEntryList(List<Toggl.TogglTimeEntryView> list, bool showLoadMoreButton)
         {
             var previousCount = this.cellsByGUID.Count;
             var newCount = list.Count;
 
             var cells = new List<Tuple<string, TimeEntryCell>>(newCount);
 
-            using (Performance.Measure("rendering time entry list, previous count: {0}, new count: {1}", previousCount, newCount))
+            using (Performance.Measure("rendering time entry list, previous count: {0}, new count: {1}", previousCount,
+                newCount))
             {
                 this.cellsByGUID.Clear();
 
@@ -99,11 +100,10 @@ namespace TogglDesktop
 
                 this.fillDays(days, registerCellByGUID);
 
-                this.Entries.FinishedFillingList();
+                this.Entries.FinishedFillingList(showLoadMoreButton);
                 this.Entries.SetTimeEntryCellList(cells);
                 this.refreshHighLight();
             }
-
         }
 
         private void fillDays(List<List<Toggl.TogglTimeEntryView>> days, Action<string, TimeEntryCell> registerCellByGUID)

@@ -113,7 +113,7 @@ void on_sync_state(const int64_t sync_state) {
 }
 
 void on_update(const char_t *url) {
-    testresult::update_url = std::string(url);
+    testresult::update_url = to_string(url);
 }
 
 void on_unsynced_items(const int64_t count) {
@@ -151,7 +151,7 @@ void on_help_articles(TogglHelpArticleView *first) {
     testing::testresult::help_article_names.clear();
     TogglHelpArticleView *it = first;
     while (it) {
-        std::string name(it->Name);
+        std::string name(to_string(it->Name));
         testing::testresult::help_article_names.push_back(name);
         it = reinterpret_cast<TogglHelpArticleView *>(it->Next);
     }
@@ -165,9 +165,9 @@ void on_time_entry_list(
     TogglTimeEntryView *it = first;
     while (it) {
         TimeEntry te;
-        te.SetGUID(it->GUID);
+        te.SetGUID(to_string(it->GUID));
         te.SetDurationInSeconds(it->DurationInSeconds);
-        te.SetDescription(it->Description);
+        te.SetDescription(to_string(it->Description));
         te.SetStart(it->Started);
         te.SetStop(it->Ended);
         testing::testresult::time_entries.push_back(te);
@@ -186,7 +186,7 @@ void on_project_autocomplete(TogglAutocompleteView *first) {
     TogglAutocompleteView *it = first;
     while (it) {
         testing::testresult::projects.push_back(
-            std::string(it->ProjectLabel));
+            to_string(it->ProjectLabel));
         it = reinterpret_cast<TogglAutocompleteView *>(it->Next);
     }
 }
@@ -195,7 +195,7 @@ void on_client_select(TogglGenericView *first) {
     testing::testresult::clients.clear();
     TogglGenericView *it = first;
     while (it) {
-        testing::testresult::clients.push_back(std::string(it->Name));
+        testing::testresult::clients.push_back(to_string(it->Name));
         it = reinterpret_cast<TogglGenericView *>(it->Next);
     }
 }
@@ -211,7 +211,7 @@ void on_time_entry_editor(
     TogglTimeEntryView *te,
     const char *focused_field_name) {
     testing::testresult::editor_state = TimeEntry();
-    testing::testresult::editor_state.SetGUID(te->GUID);
+    testing::testresult::editor_state.SetGUID(to_string(te->GUID));
     testing::testresult::editor_open = open;
     testing::testresult::editor_focused_field_name =
         std::string(focused_field_name);
@@ -239,15 +239,15 @@ void on_display_settings(
 
     testing::testresult::use_proxy = settings->UseProxy;
 
-    testing::testresult::proxy.SetHost(std::string(settings->ProxyHost));
+    testing::testresult::proxy.SetHost(to_string(settings->ProxyHost));
     testing::testresult::proxy.SetPort(settings->ProxyPort);
     testing::testresult::proxy.SetUsername(
-        std::string(settings->ProxyUsername));
+        to_string(settings->ProxyUsername));
     testing::testresult::proxy.SetPassword(
-        std::string(settings->ProxyPassword));
+        to_string(settings->ProxyPassword));
 
-    testing::testresult::settings.remind_starts = settings->RemindStarts;
-    testing::testresult::settings.remind_ends = settings->RemindEnds;
+    testing::testresult::settings.remind_starts = to_string(settings->RemindStarts);
+    testing::testresult::settings.remind_ends = to_string(settings->RemindEnds);
     testing::testresult::settings.remind_mon = settings->RemindMon;
     testing::testresult::settings.remind_tue = settings->RemindTue;
     testing::testresult::settings.remind_wed = settings->RemindWed;
@@ -262,7 +262,7 @@ void on_project_colors(
     const uint64_t color_count) {
     testresult::project_colors.clear();
     for (uint64_t i = 0; i < color_count; i++) {
-        testresult::project_colors.push_back(std::string(color_list[i]));
+        testresult::project_colors.push_back(to_string(color_list[i]));
     }
 }
 
@@ -281,12 +281,12 @@ void on_display_timer_state(TogglTimeEntryView *te) {
     testing::testresult::timer_state = TimeEntry();
     if (te) {
         testing::testresult::timer_state.SetStart(te->Started);
-        testing::testresult::timer_state.SetGUID(te->GUID);
+        testing::testresult::timer_state.SetGUID(to_string(te->GUID));
         testing::testresult::timer_state.SetDurationInSeconds(
             te->DurationInSeconds);
-        testing::testresult::timer_state.SetDescription(te->Description);
+        testing::testresult::timer_state.SetDescription(to_string(te->Description));
         if (te->Tags) {
-            testing::testresult::timer_state.SetTags(te->Tags);
+            testing::testresult::timer_state.SetTags(to_string(te->Tags));
         }
         testing::testresult::timer_state.SetBillable(te->Billable);
         testing::testresult::timer_state.SetPID(te->PID);
@@ -427,7 +427,7 @@ TEST(toggl_api, toggl_run_script) {
 TEST(toggl_api, toggl_run_script_with_invalid_script) {
     testing::App app;
     int64_t err(0);
-    char *s = toggl_run_script(app.ctx(), "foo bar", &err);
+    auto s = toggl_run_script(app.ctx(), "foo bar", &err);
     std::string res(s);
     free(s);
     ASSERT_NE(0, err);
@@ -610,15 +610,15 @@ TEST(toggl_api, toggl_set_window_settings) {
 TEST(toggl_api, toggl_get_user_fullname) {
     testing::App app;
 
-    char *str = toggl_get_user_fullname(app.ctx());
-    ASSERT_EQ("", std::string(str));
+    auto str = toggl_get_user_fullname(app.ctx());
+    ASSERT_EQ("", to_string(str));
     free(str);
 
     std::string json = loadTestData();
     ASSERT_TRUE(testing_set_logged_in_user(app.ctx(), json.c_str()));
 
     str = toggl_get_user_fullname(app.ctx());
-    ASSERT_EQ("John Smith", std::string(str));
+    ASSERT_EQ("John Smith", to_string(str));
     free(str);
 }
 
@@ -754,7 +754,7 @@ TEST(toggl_api, toggl_password_forgot) {
 TEST(toggl_api, toggl_set_environment) {
     testing::App app;
 
-    toggl_set_environment(app.ctx(), "test");
+    toggl_set_environment(app.ctx(), L"test");
 
     char *env = toggl_environment(app.ctx());
     std::string res(env);
@@ -1086,7 +1086,7 @@ TEST(toggl_api, toggl_check_view_struct_size) {
         sizeof(TogglSettingsView),
         sizeof(TogglAutotrackerRuleView));
     if (err) {
-        ASSERT_EQ("", std::string(err));
+        ASSERT_EQ("", to_string(err));
     }
     ASSERT_FALSE(err);
     free(err);

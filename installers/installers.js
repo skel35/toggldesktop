@@ -19,6 +19,7 @@ function load(){
     if (location == "/") {
       fillHtml();
       if (!!hash) {
+        console.log(hash);
         hash = hash.replace("#", "/");
         findRedirect(hash);
       }

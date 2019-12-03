@@ -7,6 +7,6 @@ if (pathName.startsWith(basePath)) {
     //window.location.replace('https://github.com/toggl-open-source/toggldesktop/releases/download/v7.4.1023/TogglDesktopInstaller-7.4.1023.exe');
     setTimeout(() => {
       window.close();
-    }, 1000);
+    }, 4000);
   }
 }

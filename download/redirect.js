@@ -5,6 +5,8 @@ if (pathName.startsWith(basePath)) {
   if (platformChannel == 'windows64-dev/') {
     window.location.href = 'https://github.com/toggl-open-source/toggldesktop/releases/download/v7.4.1023/TogglDesktopInstaller-7.4.1023.exe';
     //window.location.replace('https://github.com/toggl-open-source/toggldesktop/releases/download/v7.4.1023/TogglDesktopInstaller-7.4.1023.exe');
-    window.close();
+    setTimeout(() => {
+      window.close();
+    }, 1000);
   }
 }
